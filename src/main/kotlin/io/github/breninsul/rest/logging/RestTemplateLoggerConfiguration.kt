@@ -25,8 +25,6 @@
 
 package io.github.breninsul.rest.logging
 
-import io.github.breninsul.rest.logging.RestTemplateLoggerProperties
-import io.github.breninsul.rest.logging.RestTemplateLoggingInterceptor
 import org.springframework.boot.autoconfigure.AutoConfiguration
 import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty
 import org.springframework.boot.context.properties.EnableConfigurationProperties
