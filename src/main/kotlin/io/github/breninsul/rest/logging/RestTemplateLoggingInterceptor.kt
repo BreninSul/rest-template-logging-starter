@@ -160,7 +160,7 @@ open class RestTemplateLoggingInterceptor(protected open val properties: RestTem
         val contentLength =response.headers.contentLength
 
         val haveToLogBody = request.logResponseBody() ?:properties.response.bodyIncluded
-        val wrappedResponse =if(haveToLogBody)response else CachedBodyClientHttpResponse(response)
+        val wrappedResponse =if(!haveToLogBody)response else CachedBodyClientHttpResponse(response)
         val emptyBody = contentLength == 0L
         val body = if (contentLength > properties.maxBodySize) constructTooBigMsg(contentLength)
             else if (!haveToLogBody) ""
