@@ -88,7 +88,7 @@ open class RestTemplateLoggingInterceptor(protected open val properties: RestTem
      *
      * @see RestTemplateLoggingInterceptor
      */
-    protected open val footerFormat: String = "===========================CLIENT RestTemplate %type% end  ==========================="
+    protected open val footerFormat: String = "\n===========================CLIENT RestTemplate %type% end  ==========================="
 
     /**
      * Represents the format string for new lines in the log output.
