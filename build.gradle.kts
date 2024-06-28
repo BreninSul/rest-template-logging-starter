@@ -26,22 +26,22 @@
 
 plugins {
     val kotlinVersion = "2.0.0"
-    val springBootVersion = "3.3.0"
+    val springBootVersion = "3.3.1"
     id("java-library")
     id("net.thebugmc.gradle.sonatype-central-portal-publisher") version "1.2.3"
     id("org.springframework.boot") version springBootVersion
-    id("io.spring.dependency-management") version "1.1.4"
+    id("io.spring.dependency-management") version "1.1.5"
     id("org.jetbrains.kotlin.jvm") version kotlinVersion
     id("org.jetbrains.kotlin.plugin.spring") version kotlinVersion
     id("org.jetbrains.kotlin.kapt") version kotlinVersion
 }
 
-val springBootVersion = "3.3.0"
+val springBootVersion = "3.3.1"
 val kotlinVersion = "2.0.0"
 val javaVersion = JavaVersion.VERSION_17
 
 group = "io.github.breninsul"
-version = "1.0.2"
+version = "1.0.3"
 
 java {
     sourceCompatibility = javaVersion

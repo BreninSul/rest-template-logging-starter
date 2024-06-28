@@ -28,6 +28,8 @@ Client is not registered in this starter. Interceptor should be manually added b
 | `rest-template.logging-interceptor.response.body-included`      | Boolean          | Is body included to log message (response)       |
 
 
+You can additionally configure logging for each request by passing headers from `io.github.breninsul.rest.logging.RestTemplateConfigHeaders` to request
+
 
 add the following dependency:
 
@@ -59,3 +61,5 @@ Hey ya! Great to see you here. Btw, nothing is configured for this request path.
 
 ===========================CLIENT RestTemplate Response end  ===========================
 ````
+
+
