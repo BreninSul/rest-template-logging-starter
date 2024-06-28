@@ -1,6 +1,7 @@
 package io.github.breninsul.rest.logging
 
 import io.github.breninsul.rest.logging.RestTemplateConfigHeaders.TECHNICAL_HEADERS
+import org.springframework.http.HttpHeaders
 import org.springframework.http.HttpRequest
 
 /**
@@ -21,6 +22,13 @@ object RestTemplateConfigHeaders {
     val TECHNICAL_HEADERS = mutableListOf(LOG_REQUEST_URI, LOG_REQUEST_HEADERS, LOG_REQUEST_BODY, LOG_REQUEST_TOOK_TIME, LOG_RESPONSE_URI, LOG_RESPONSE_HEADERS, LOG_RESPONSE_BODY, LOG_RESPONSE_TOOK_TIME)
 }
 
+/**
+ * Retrieves a string representation of the HttpHeaders object, excluding technical headers.
+ *
+ * @return A string representing the headers, with each header key-value pair separated by ":" and each header separated by ";".
+ */
+fun HttpHeaders.getHeadersString() =
+    (this.filter { h->!TECHNICAL_HEADERS.any { th->th.contentEquals(h.key) } }.map { "${it.key}:${it.value.joinToString(",")}" }.joinToString(";"))
 /**
  * Returns a list of technical headers present in the HTTP request.
  *
