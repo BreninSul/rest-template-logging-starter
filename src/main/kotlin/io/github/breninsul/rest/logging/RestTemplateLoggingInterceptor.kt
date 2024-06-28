@@ -74,7 +74,7 @@ open class RestTemplateLoggingInterceptor(protected open val properties: RestTem
      * @see RestTemplateLoggingInterceptor.constructRqBody
      * @see RestTemplateLoggingInterceptor.constructRsBody
      */
-    protected open val headerFormat: String = "===========================CLIENT RestTemplate %type% begin==========================="
+    protected open val headerFormat: String = "\n===========================CLIENT RestTemplate %type% begin==========================="
 
     /**
      * The format string used to construct the footer of a log message.
