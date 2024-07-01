@@ -27,8 +27,11 @@ object RestTemplateConfigHeaders {
  *
  * @return A string representing the headers, with each header key-value pair separated by ":" and each header separated by ";".
  */
-fun HttpHeaders.getHeadersString() =
-    (this.filter { h->!TECHNICAL_HEADERS.any { th->th.contentEquals(h.key) } }.map { "${it.key}:${it.value.joinToString(",")}" }.joinToString(";"))
+fun HttpHeaders.getHeadersString(maskingHeaders:List<String>) =
+    (this.asSequence()
+        .filter { h->!TECHNICAL_HEADERS.any { th->th.contentEquals(h.key) } }
+        .map { "${if(maskingHeaders.any { m->m.contentEquals(it.key) }) "<MASKED>" else it.key}:${it.value.joinToString(",")}" }
+        .joinToString(";"))
 /**
  * Returns a list of technical headers present in the HTTP request.
  *

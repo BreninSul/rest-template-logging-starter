@@ -43,7 +43,11 @@ import java.util.logging.Logger
  * @param properties The RestTemplateLoggerProperties object containing the
  *     configuration properties.
  */
-open class RestTemplateLoggingInterceptor(protected open val properties: RestTemplateLoggerProperties) : ClientHttpRequestInterceptor, Ordered {
+open class RestTemplateLoggingInterceptor(
+    protected open val properties: RestTemplateLoggerProperties,
+    protected open val requestBodyMaskers: List<RestTemplateRequestBodyMasking>,
+    protected open val responseBodyMaskers: List<RestTemplateResponseBodyMasking>
+) : ClientHttpRequestInterceptor, Ordered {
     /**
      * This variable represents a logger used for logging messages in the
      * RestTemplate class.
@@ -126,7 +130,7 @@ open class RestTemplateLoggingInterceptor(protected open val properties: RestTem
             val rqId = getIdString()
             logRequest(rqId, request, body, startTime)
             //Have to remove technical headers before request
-            val technicalHeadersBackup=request.removeTechnicalHeaders()
+            val technicalHeadersBackup = request.removeTechnicalHeaders()
             val httpResponse = execution.execute(request, body)
             //And set them back
             request.setTechnicalHeaders(technicalHeadersBackup)
@@ -157,15 +161,15 @@ open class RestTemplateLoggingInterceptor(protected open val properties: RestTem
         if (loggingLevel == Level.OFF) {
             return response
         }
-        val contentLength =response.headers.contentLength
+        val contentLength = response.headers.contentLength
 
-        val haveToLogBody = request.logResponseBody() ?:properties.response.bodyIncluded
-        val wrappedResponse =if(!haveToLogBody)response else CachedBodyClientHttpResponse(response)
+        val haveToLogBody = request.logResponseBody() ?: properties.response.bodyIncluded
+        val wrappedResponse = if (!haveToLogBody) response else CachedBodyClientHttpResponse(response)
         val emptyBody = contentLength == 0L
         val body = if (contentLength > properties.maxBodySize) constructTooBigMsg(contentLength)
-            else if (!haveToLogBody) ""
-            else if (emptyBody) ""
-            else String((wrappedResponse as CachedBodyClientHttpResponse).bodyByteArray, StandardCharsets.UTF_8)
+        else if (!haveToLogBody) ""
+        else if (emptyBody) ""
+        else String((wrappedResponse as CachedBodyClientHttpResponse).bodyByteArray, StandardCharsets.UTF_8)
         val logBody = constructRsBody(rqId, response, request, time, body)
         logger.log(loggingLevel, logBody)
         return wrappedResponse
@@ -189,10 +193,10 @@ open class RestTemplateLoggingInterceptor(protected open val properties: RestTem
         val message = listOf(
             headerFormat.replace("%type%", Type.Request.name),
             getIdString(rqId, Type.Request),
-            getUriString(request.logRequestUri(),"${request.method} ${request.uri}", Type.Request),
-            getTookString(request.logRequestTookTime(),time, Type.Request),
-            getHeadersString(request.logRequestHeaders(),request.headers, Type.Request),
-            getBodyString(request.logRequestBody(),body, Type.Request),
+            getUriString(request.logRequestUri(), "${request.method} ${request.uri}", Type.Request),
+            getTookString(request.logRequestTookTime(), time, Type.Request),
+            getHeadersString(request.logRequestHeaders(), request.headers, Type.Request),
+            getBodyString(request.logRequestBody(), body, Type.Request),
             footerFormat.replace("%type%", Type.Request.name),
         ).filter { !it.isNullOrBlank() }
             .joinToString("\n")
@@ -219,10 +223,10 @@ open class RestTemplateLoggingInterceptor(protected open val properties: RestTem
         val message = listOf(
             headerFormat.replace("%type%", Type.Response.name),
             getIdString(rqId, Type.Response),
-            getUriString(request.logResponseUri(),"${response.statusCode.value()} ${request.method} ${request.uri}", Type.Response),
-            getTookString(request.logResponseTookTime(),time, Type.Response),
-            getHeadersString(request.logResponseHeaders(),response.headers, Type.Response),
-            getBodyString(request.logResponseBody(),content, Type.Response),
+            getUriString(request.logResponseUri(), "${response.statusCode.value()} ${request.method} ${request.uri}", Type.Response),
+            getTookString(request.logResponseTookTime(), time, Type.Response),
+            getHeadersString(request.logResponseHeaders(), response.headers, Type.Response),
+            getBodyString(request.logResponseBody(), content, Type.Response),
             footerFormat.replace("%type%", Type.Response.name),
         ).filter { !it.isNullOrBlank() }
             .joinToString("\n")
@@ -246,29 +250,31 @@ open class RestTemplateLoggingInterceptor(protected open val properties: RestTem
     /**
      * Retrieves the URI string for logging purposes.
      *
-     * @param logEnabledForRequest Indicates if logging is enabled for the request.
+     * @param logEnabledForRequest Indicates if logging is enabled for the
+     *     request.
      * @param uri The URI string.
      * @param type The type of the log message (Request or Response).
-     * @return The formatted URI string if logging is enabled for the request and the type
-     *         properties indicate that the URI should be included in the log message,
-     *         otherwise null.
+     * @return The formatted URI string if logging is enabled for the request
+     *     and the type properties indicate that the URI should be included in
+     *     the log message, otherwise null.
      */
-    protected open fun getUriString(logEnabledForRequest:Boolean?,uri: String, type: Type): String? {
-        return if (logEnabledForRequest?:type.properties().uriIncluded) formatLine("URI", uri)
+    protected open fun getUriString(logEnabledForRequest: Boolean?, uri: String, type: Type): String? {
+        return if (logEnabledForRequest ?: type.properties().uriIncluded) formatLine("URI", uri)
         else null
     }
 
     /**
      * Retrieves the result of the "Took" operation as a formatted string.
      *
-     * @param logEnabledForRequest Indicates if logging is enabled for the request.
+     * @param logEnabledForRequest Indicates if logging is enabled for the
+     *     request.
      * @param startTime The start time of the operation.
      * @param type The type of the log message.
      * @return The formatted "Took" string if it is included in logging,
      *     otherwise null.
      */
-    protected open fun getTookString(logEnabledForRequest:Boolean?,startTime: Long, type: Type): String? {
-        return if (logEnabledForRequest?:type.properties().tookTimeIncluded) formatLine("Took", "${System.currentTimeMillis() - startTime} ms")
+    protected open fun getTookString(logEnabledForRequest: Boolean?, startTime: Long, type: Type): String? {
+        return if (logEnabledForRequest ?: type.properties().tookTimeIncluded) formatLine("Took", "${System.currentTimeMillis() - startTime} ms")
         else null
     }
 
@@ -276,29 +282,39 @@ open class RestTemplateLoggingInterceptor(protected open val properties: RestTem
      * Retrieves the formatted headers string based on the given Headers object
      * and type.
      *
-     * @param logEnabledForRequest Indicates if logging is enabled for the request.
+     * @param logEnabledForRequest Indicates if logging is enabled for the
+     *     request.
      * @param headers The HttpHeaders object containing the headers
      *     information.
      * @param type The Type of the log message (Request or Response).
      * @return The formatted headers string if headersIncluded is true for the
      *     given type, otherwise null.
      */
-    protected open fun getHeadersString(logEnabledForRequest:Boolean?,headers: HttpHeaders, type: Type): String? {
-        return if (logEnabledForRequest?:type.properties().bodyIncluded) formatLine("Headers", headers.getHeadersString())
+    protected open fun getHeadersString(logEnabledForRequest: Boolean?, headers: HttpHeaders, type: Type): String? {
+        val maskHeaders = when (type) {
+            Type.Request -> properties.request.mask.maskHeaders
+            Type.Response->properties.response.mask.maskHeaders
+        }
+        return if (logEnabledForRequest ?: type.properties().bodyIncluded) formatLine("Headers", headers.getHeadersString(maskHeaders))
         else null
     }
 
     /**
      * Retrieves the body string based on the given body and type.
      *
-     * @param logEnabledForRequest Indicates if logging is enabled for the request.
+     * @param logEnabledForRequest Indicates if logging is enabled for the
+     *     request.
      * @param body The body string to be included in the log message.
      * @param type The type of the log (Request or Response).
      * @return The formatted body string if bodyIncluded is true for the given
      *     type, otherwise null.
      */
-    protected open fun getBodyString(logEnabledForRequest:Boolean?,body: String?, type: Type): String? {
-        return if (logEnabledForRequest?:type.properties().bodyIncluded) formatLine("Body", body)
+    protected open fun getBodyString(logEnabledForRequest: Boolean?, body: String?, type: Type): String? {
+        val maskers=when(type){
+            Type.Request->requestBodyMaskers
+            Type.Response->responseBodyMaskers
+        }
+        return if (logEnabledForRequest ?: type.properties().bodyIncluded) formatLine("Body", maskers.fold(body){b,it->it.mask(b)})
         else null
     }
 
@@ -327,7 +343,6 @@ open class RestTemplateLoggingInterceptor(protected open val properties: RestTem
     }
 
 
-
     /**
      * Logs the request.
      *
@@ -347,12 +362,12 @@ open class RestTemplateLoggingInterceptor(protected open val properties: RestTem
 
         val contentLength = (requestBody?.size ?: 0).toLong()
         val emptyBody = contentLength == 0L
-        val haveToLogBody = request.logRequestBody() ?:properties.request.bodyIncluded
+        val haveToLogBody = request.logRequestBody() ?: properties.request.bodyIncluded
 
         val body = if (contentLength > properties.maxBodySize) constructTooBigMsg(contentLength)
-            else if (!haveToLogBody) ""
-            else if (emptyBody) ""
-            else String(requestBody!!, StandardCharsets.UTF_8)
+        else if (!haveToLogBody) ""
+        else if (emptyBody) ""
+        else String(requestBody!!, StandardCharsets.UTF_8)
         val logString = constructRqBody(rqId, request, startTime, body)
         logger.log(loggingLevel, logString)
     }
@@ -364,6 +379,7 @@ open class RestTemplateLoggingInterceptor(protected open val properties: RestTem
      * @return The constructed too big message.
      */
     protected open fun constructTooBigMsg(contentLength: Long) = "<TOO BIG $contentLength bytes>"
+
     /**
      * Retrieves the ID string for logging purposes.
      *

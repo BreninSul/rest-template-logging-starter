@@ -48,8 +48,34 @@ open class RestTemplateLoggerConfiguration {
      * @return The RestTemplateLoggingInterceptor instance.
      */
     @Bean
-    open fun registerRestTemplateLoggingInterceptor(properties: RestTemplateLoggerProperties): RestTemplateLoggingInterceptor {
-        return RestTemplateLoggingInterceptor(properties)
+    fun registerRestTemplateLoggingInterceptor(properties: RestTemplateLoggerProperties): RestTemplateLoggingInterceptor {
+        val requestMaskers= listOf(
+            restTemplateRequestRegexJsonBodyMasking(properties.request.mask),
+            restTemplateRequestFormUrlencodedBodyMasking(properties.request.mask)
+            )
+        val responseMaskers= listOf(
+            restTemplateResponseRegexJsonBodyMasking(properties.request.mask),
+            restTemplateResponseFormUrlencodedBodyMasking(properties.request.mask)
+        )
+        return RestTemplateLoggingInterceptor(properties,requestMaskers,responseMaskers)
     }
 
+
+    fun restTemplateRequestRegexJsonBodyMasking(properties: RestTemplateLoggerProperties.MaskSettings):RestTemplateRequestBodyMasking{
+        return RestTemplateRequestBodyMaskingDelegate(RestTemplateRegexJsonBodyMasking(properties.maskJsonBodyKeys))
+    }
+
+
+    fun restTemplateResponseRegexJsonBodyMasking(properties: RestTemplateLoggerProperties.MaskSettings):RestTemplateResponseBodyMasking{
+        return RestTemplateRResponseBodyMaskingDelegate(RestTemplateRegexJsonBodyMasking(properties.maskJsonBodyKeys))
+    }
+
+
+    fun restTemplateRequestFormUrlencodedBodyMasking(properties: RestTemplateLoggerProperties.MaskSettings):RestTemplateRequestBodyMasking{
+        return RestTemplateRequestBodyMaskingDelegate(RestTemplateRegexFormUrlencodedBodyMasking(properties.maskJsonBodyKeys))
+    }
+
+    fun restTemplateResponseFormUrlencodedBodyMasking(properties: RestTemplateLoggerProperties.MaskSettings):RestTemplateResponseBodyMasking{
+        return RestTemplateRResponseBodyMaskingDelegate(RestTemplateRegexFormUrlencodedBodyMasking(properties.maskJsonBodyKeys))
+    }
 }
