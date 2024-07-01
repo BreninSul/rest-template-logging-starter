@@ -30,7 +30,7 @@ object RestTemplateConfigHeaders {
 fun HttpHeaders.getHeadersString(maskingHeaders:List<String>) =
     (this.asSequence()
         .filter { h->!TECHNICAL_HEADERS.any { th->th.contentEquals(h.key) } }
-        .map { "${if(maskingHeaders.any { m->m.contentEquals(it.key) }) "<MASKED>" else it.key}:${it.value.joinToString(",")}" }
+        .map { "${it.key}:${if(maskingHeaders.any { m->m.contentEquals(it.key,true) }) "<MASKED>" else it.value.joinToString(",")}" }
         .joinToString(";"))
 /**
  * Returns a list of technical headers present in the HTTP request.

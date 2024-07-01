@@ -31,11 +31,11 @@ open class RestTemplateRegexJsonBodyMasking(
         if (message == null) {
             return emptyBody
         }
-        val ranges = regex.findAll(message).map { it.groups[1]!!.range }
+        val ranges = regex.findAll(message).map { it.groups[2]!!.range }
 
         val maskedMessage = StringBuilder(message)
         ranges.forEach { range ->
-            maskedMessage.replaceRange(range, maskedBody)
+            maskedMessage.replace(range.first,range.last+1, maskedBody)
         }
         return maskedMessage.toString()
     }
@@ -54,11 +54,11 @@ open class RestTemplateRegexFormUrlencodedBodyMasking(
         if (message == null) {
             return emptyBody
         }
-        val ranges = regex.findAll(message).map { it.groups[1]!!.range }
+        val ranges = regex.findAll(message).map { it.groups[3]!!.range }
 
         val maskedMessage = StringBuilder(message)
         ranges.forEach { range ->
-            maskedMessage.replaceRange(range, maskedBody)
+            maskedMessage.replace(range.first,range.last+1, maskedBody)
         }
         return maskedMessage.toString()
     }
