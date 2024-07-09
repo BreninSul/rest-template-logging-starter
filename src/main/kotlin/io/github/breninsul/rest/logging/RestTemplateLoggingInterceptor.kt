@@ -47,7 +47,12 @@ open class RestTemplateLoggingInterceptor(
     requestBodyMaskers: List<RestTemplateRequestBodyMasking>,
     responseBodyMaskers: List<RestTemplateResponseBodyMasking>,
 ) : ClientHttpRequestInterceptor, Ordered {
-    protected open val helper = HttpLoggingHelper("RestTemplate", properties, requestBodyMaskers, responseBodyMaskers)
+    /**
+     * Provides logging functionality for HTTP requests and responses.
+     *
+     * @property helper The HTTP logging helper used for logging requests and responses.
+     */
+    protected open val helper = HttpLoggingHelper("RestTemplate", properties.toHttpSettings(), requestBodyMaskers, responseBodyMaskers)
     protected open val logger: Logger = Logger.getLogger(RestTemplateLoggingInterceptor::class.java.name)
 
     /**

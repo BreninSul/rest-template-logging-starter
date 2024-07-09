@@ -24,7 +24,8 @@
 
 package io.github.breninsul.rest.logging
 
-import io.github.breninsul.logging.HttpLoggerProperties
+import io.github.breninsul.logging.HttpLogSettings
+import io.github.breninsul.logging.HttpLoggingProperties
 import io.github.breninsul.logging.JavaLoggingLevel
 import org.springframework.boot.context.properties.ConfigurationProperties
 
@@ -46,11 +47,13 @@ import org.springframework.boot.context.properties.ConfigurationProperties
  */
 @ConfigurationProperties("rest-template.logging-interceptor")
 open class RestTemplateLoggerProperties(
-     enabled: Boolean = true,
-     loggingLevel: JavaLoggingLevel = JavaLoggingLevel.INFO,
-     request: LogSettings = LogSettings(tookTimeIncluded = false),
-     response: LogSettings = LogSettings(tookTimeIncluded = true),
-     maxBodySize: Int = Int.MAX_VALUE,
-     order: Int = 0,
-     newLineColumnSymbols: Int = 14,
-):HttpLoggerProperties(enabled, loggingLevel, request, response, maxBodySize, order,newLineColumnSymbols)
+    var enabled: Boolean = true,
+    var loggingLevel: JavaLoggingLevel = JavaLoggingLevel.INFO,
+    var request: HttpLogSettings = HttpLogSettings(tookTimeIncluded = false),
+    var response: HttpLogSettings = HttpLogSettings(tookTimeIncluded = true),
+    var maxBodySize: Int = Int.MAX_VALUE,
+    var order: Int = 0,
+    var newLineColumnSymbols: Int = 14,
+) {
+    fun toHttpSettings(): HttpLoggingProperties = HttpLoggingProperties(enabled, loggingLevel, request, response, maxBodySize, order, newLineColumnSymbols)
+}

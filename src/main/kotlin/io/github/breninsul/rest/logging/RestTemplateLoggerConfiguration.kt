@@ -25,7 +25,7 @@
 
 package io.github.breninsul.rest.logging
 
-import io.github.breninsul.logging.HttpLoggerProperties
+import io.github.breninsul.logging.HttpMaskSettings
 import io.github.breninsul.logging.HttpRegexFormUrlencodedBodyMasking
 import io.github.breninsul.logging.HttpRegexJsonBodyMasking
 import org.springframework.boot.autoconfigure.AutoConfiguration
@@ -64,21 +64,21 @@ open class RestTemplateLoggerConfiguration {
     }
 
 
-    fun restTemplateRequestRegexJsonBodyMasking(properties: HttpLoggerProperties.MaskSettings):RestTemplateRequestBodyMasking{
+    fun restTemplateRequestRegexJsonBodyMasking(properties: HttpMaskSettings):RestTemplateRequestBodyMasking{
         return RestTemplateRequestBodyMaskingDelegate(HttpRegexJsonBodyMasking(properties.maskJsonBodyKeys))
     }
 
 
-    fun restTemplateResponseRegexJsonBodyMasking(properties: HttpLoggerProperties.MaskSettings):RestTemplateResponseBodyMasking{
+    fun restTemplateResponseRegexJsonBodyMasking(properties: HttpMaskSettings):RestTemplateResponseBodyMasking{
         return RestTemplateRResponseBodyMaskingDelegate(HttpRegexJsonBodyMasking(properties.maskJsonBodyKeys))
     }
 
 
-    fun restTemplateRequestFormUrlencodedBodyMasking(properties: HttpLoggerProperties.MaskSettings):RestTemplateRequestBodyMasking{
+    fun restTemplateRequestFormUrlencodedBodyMasking(properties: HttpMaskSettings):RestTemplateRequestBodyMasking{
         return RestTemplateRequestBodyMaskingDelegate(HttpRegexFormUrlencodedBodyMasking(properties.maskJsonBodyKeys))
     }
 
-    fun restTemplateResponseFormUrlencodedBodyMasking(properties: HttpLoggerProperties.MaskSettings):RestTemplateResponseBodyMasking{
+    fun restTemplateResponseFormUrlencodedBodyMasking(properties: HttpMaskSettings):RestTemplateResponseBodyMasking{
         return RestTemplateRResponseBodyMaskingDelegate(HttpRegexFormUrlencodedBodyMasking(properties.maskJsonBodyKeys))
     }
 }
