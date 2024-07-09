@@ -24,6 +24,8 @@
 
 package io.github.breninsul.rest.logging
 
+import io.github.breninsul.logging.HttpLoggerProperties
+import io.github.breninsul.logging.JavaLoggingLevel
 import org.springframework.boot.context.properties.ConfigurationProperties
 
 /**
@@ -43,44 +45,12 @@ import org.springframework.boot.context.properties.ConfigurationProperties
  * @property newLineColumnSymbols The number of column symbols for new line. Default value is 14.
  */
 @ConfigurationProperties("rest-template.logging-interceptor")
-data class RestTemplateLoggerProperties(
-    var enabled: Boolean = true,
-    var loggingLevel: JavaLoggingLevel = JavaLoggingLevel.INFO,
-    var request: LogSettings = LogSettings(tookTimeIncluded = false),
-    var response: LogSettings = LogSettings(tookTimeIncluded = true),
-    var maxBodySize: Int = Int.MAX_VALUE,
-    var order: Int = 0,
-    var newLineColumnSymbols: Int = 14,
-) {
-    /**
-     * Represents the settings for logging various aspects of requests and responses.
-     *
-     * @param idIncluded Whether to include the ID in the log output. Default value is `true`.
-     * @param uriIncluded Whether to include the URI in the log output. Default value is `true`.
-     * @param tookTimeIncluded Whether to include the time taken for the request/response in the log output. Default value is `true`.
-     * @param headersIncluded Whether to include the headers in the log output. Default value is `true`.
-     * @param bodyIncluded Whether to include the body in the log output. Default value is `true`.
-     */
-    data class LogSettings(
-        var idIncluded: Boolean = true,
-        var uriIncluded: Boolean = true,
-        var tookTimeIncluded: Boolean = true,
-        var headersIncluded: Boolean = true,
-        var bodyIncluded: Boolean = true,
-        var mask:MaskSettings=MaskSettings()
-    )
-
-    /**
-     * Represents the mask settings for logging requests and responses.
-     *
-     * @property maskHeaders The list of headers to be masked in the log output. Default value is ["Authorization"].
-     * @property maskJsonBodyKeys The list of keys to be masked in the JSON body of the log output. Default value is ["password", "pass", "code", "token", "secret"].
-     * @property maskFormUrlencodedBodyKeys The list of keys to be masked in the form-urlencoded body of the log output. Default value is ["password", "pass", "code", "token", "secret
-     * "].
-     */
-    data class MaskSettings(
-        var maskHeaders: List<String> = listOf("Authorization"),
-        var maskJsonBodyKeys: List<String> = listOf("password", "pass", "code", "token", "secret"),
-        var maskFormUrlencodedBodyKeys: List<String> = listOf("password", "pass", "code", "token", "secret"),
-    )
-}
+open class RestTemplateLoggerProperties(
+     enabled: Boolean = true,
+     loggingLevel: JavaLoggingLevel = JavaLoggingLevel.INFO,
+     request: LogSettings = LogSettings(tookTimeIncluded = false),
+     response: LogSettings = LogSettings(tookTimeIncluded = true),
+     maxBodySize: Int = Int.MAX_VALUE,
+     order: Int = 0,
+     newLineColumnSymbols: Int = 14,
+):HttpLoggerProperties(enabled, loggingLevel, request, response, maxBodySize, order,newLineColumnSymbols)

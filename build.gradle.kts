@@ -34,6 +34,7 @@ plugins {
     id("org.jetbrains.kotlin.jvm") version kotlinVersion
     id("org.jetbrains.kotlin.plugin.spring") version kotlinVersion
     id("org.jetbrains.kotlin.kapt") version kotlinVersion
+    id("org.jetbrains.dokka") version "1.9.20"
 }
 
 val springBootVersion = "3.3.1"
@@ -41,7 +42,7 @@ val kotlinVersion = "2.0.0"
 val javaVersion = JavaVersion.VERSION_17
 
 group = "io.github.breninsul"
-version = "1.1.0"
+version = "1.2.0"
 
 java {
     sourceCompatibility = javaVersion
@@ -63,6 +64,7 @@ tasks.compileKotlin {
 dependencies {
     compileOnly("org.springframework.boot:spring-boot-starter:$springBootVersion")
     compileOnly("org.springframework.boot:spring-boot-starter-web:$springBootVersion")
+    api("io.github.breninsul:http-logging-commons:1.0.1")
     testImplementation("org.testcontainers:junit-jupiter")
     testImplementation("org.springframework.boot:spring-boot-starter-test")
 
@@ -111,9 +113,14 @@ centralPortal {
     }
 }
 
-tasks.jar {
+val javadocJar =
+    tasks.named<Jar>("javadocJar") {
+        from(tasks.named("dokkaJavadoc"))
+        duplicatesStrategy = DuplicatesStrategy.INCLUDE
+    }
+tasks.getByName<Jar>("jar") {
     enabled = true
-    archiveClassifier.set("")
+    archiveClassifier = ""
 }
 
 
