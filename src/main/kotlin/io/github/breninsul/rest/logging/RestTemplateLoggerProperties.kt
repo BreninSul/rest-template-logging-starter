@@ -47,13 +47,11 @@ import org.springframework.boot.context.properties.ConfigurationProperties
  */
 @ConfigurationProperties("rest-template.logging-interceptor")
 open class RestTemplateLoggerProperties(
-    var enabled: Boolean = true,
-    var loggingLevel: JavaLoggingLevel = JavaLoggingLevel.INFO,
-    var request: HttpLogSettings = HttpLogSettings(tookTimeIncluded = false),
-    var response: HttpLogSettings = HttpLogSettings(tookTimeIncluded = true),
-    var maxBodySize: Int = Int.MAX_VALUE,
-    var order: Int = 0,
-    var newLineColumnSymbols: Int = 14,
-) {
-    fun toHttpSettings(): HttpLoggingProperties = HttpLoggingProperties(enabled, loggingLevel, request, response, maxBodySize, order, newLineColumnSymbols)
-}
+     enabled: Boolean = true,
+     loggingLevel: JavaLoggingLevel = JavaLoggingLevel.INFO,
+     request: HttpLogSettings = HttpLogSettings(tookTimeIncluded = false),
+     response: HttpLogSettings = HttpLogSettings(tookTimeIncluded = true),
+     maxBodySize: Int = Int.MAX_VALUE,
+     order: Int = 0,
+     newLineColumnSymbols: Int = 14,
+):HttpLoggingProperties(enabled, loggingLevel, request, response, maxBodySize, order, newLineColumnSymbols)

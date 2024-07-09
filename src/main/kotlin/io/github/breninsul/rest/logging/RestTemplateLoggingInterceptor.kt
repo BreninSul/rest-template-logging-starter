@@ -52,7 +52,7 @@ open class RestTemplateLoggingInterceptor(
      *
      * @property helper The HTTP logging helper used for logging requests and responses.
      */
-    protected open val helper = HttpLoggingHelper("RestTemplate", properties.toHttpSettings(), requestBodyMaskers, responseBodyMaskers)
+    protected open val helper = HttpLoggingHelper("RestTemplate", properties, requestBodyMaskers, responseBodyMaskers)
     protected open val logger: Logger = Logger.getLogger(RestTemplateLoggingInterceptor::class.java.name)
 
     /**
