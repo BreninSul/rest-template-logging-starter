@@ -108,7 +108,7 @@ open class RestTemplateLoggingInterceptor(
         val logBody = constructRsBody(rqId, response, request, time){
             val contentLength = response.headers.contentLength
             val emptyBody = contentLength == 0L
-            if (contentLength > properties.maxBodySize) {
+            if (contentLength > properties.response.maxBodySize) {
                 helper.constructTooBigMsg(contentLength)
             } else if (!haveToLogBody) {
                 ""
@@ -207,7 +207,7 @@ open class RestTemplateLoggingInterceptor(
                 val emptyBody = contentLength == 0L
                 val haveToLogBody = request.logRequestBody() ?: properties.request.bodyIncluded
 
-                if (contentLength > properties.maxBodySize) {
+                if (contentLength > properties.request.maxBodySize) {
                     helper.constructTooBigMsg(contentLength)
                 } else if (!haveToLogBody) {
                     ""
