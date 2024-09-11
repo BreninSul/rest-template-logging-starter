@@ -36,14 +36,21 @@ import java.util.logging.Level
 import java.util.logging.Logger
 
 /**
- * A client HTTP request interceptor for logging request and response
- * messages using RestTemplate.
+ * Interceptor for logging details of HTTP requests and responses made via RestTemplate.
  *
- * @param properties The RestTemplateLoggerProperties object containing the
- *     configuration properties.
+ * @property properties Configuration properties for the RestTemplateLogger.
+ * @property helper Helper object for performing the actual logging operations.
+ * @property logger Java utility logger for logging exceptions and errors.
+ *
+ * @constructor Constructs an instance with specified properties and masking configurations.
+ * @param properties Configuration properties for logging.
+ * @param uriMaskers List of URI masking implementations.
+ * @param requestBodyMaskers List of request body masking implementations.
+ * @param responseBodyMaskers List of response body masking implementations.
  */
 open class RestTemplateLoggingInterceptor(
     protected open val properties: RestTemplateLoggerProperties,
+    uriMaskers: List<RestTemplateUriMasking>,
     requestBodyMaskers: List<RestTemplateRequestBodyMasking>,
     responseBodyMaskers: List<RestTemplateResponseBodyMasking>,
 ) : ClientHttpRequestInterceptor, Ordered {
@@ -52,7 +59,7 @@ open class RestTemplateLoggingInterceptor(
      *
      * @property helper The HTTP logging helper used for logging requests and responses.
      */
-    protected open val helper = HttpLoggingHelper("RestTemplate", properties, requestBodyMaskers, responseBodyMaskers)
+    protected open val helper = HttpLoggingHelper("RestTemplate", properties,uriMaskers, requestBodyMaskers, responseBodyMaskers)
     protected open val logger: Logger = Logger.getLogger(RestTemplateLoggingInterceptor::class.java.name)
 
     /**

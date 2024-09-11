@@ -28,6 +28,7 @@ package io.github.breninsul.rest.logging
 import io.github.breninsul.logging.HttpMaskSettings
 import io.github.breninsul.logging.HttpRegexFormUrlencodedBodyMasking
 import io.github.breninsul.logging.HttpRegexJsonBodyMasking
+import io.github.breninsul.logging.HttpRegexUriMasking
 import org.springframework.boot.autoconfigure.AutoConfiguration
 import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty
 import org.springframework.boot.context.properties.EnableConfigurationProperties
@@ -60,7 +61,8 @@ open class RestTemplateLoggerConfiguration {
             restTemplateResponseRegexJsonBodyMasking(properties.request.mask),
             restTemplateResponseFormUrlencodedBodyMasking(properties.request.mask)
         )
-        return RestTemplateLoggingInterceptor(properties,requestMaskers,responseMaskers)
+        val uriMaskers= listOf(restTemplateUriMasking(properties.request.mask))
+        return RestTemplateLoggingInterceptor(properties,uriMaskers,requestMaskers,responseMaskers)
     }
 
 
@@ -70,7 +72,7 @@ open class RestTemplateLoggerConfiguration {
 
 
     fun restTemplateResponseRegexJsonBodyMasking(properties: HttpMaskSettings):RestTemplateResponseBodyMasking{
-        return RestTemplateRResponseBodyMaskingDelegate(HttpRegexJsonBodyMasking(properties.maskJsonBodyKeys))
+        return RestTemplateResponseBodyMaskingDelegate(HttpRegexJsonBodyMasking(properties.maskJsonBodyKeys))
     }
 
 
@@ -79,6 +81,10 @@ open class RestTemplateLoggerConfiguration {
     }
 
     fun restTemplateResponseFormUrlencodedBodyMasking(properties: HttpMaskSettings):RestTemplateResponseBodyMasking{
-        return RestTemplateRResponseBodyMaskingDelegate(HttpRegexFormUrlencodedBodyMasking(properties.maskJsonBodyKeys))
+        return RestTemplateResponseBodyMaskingDelegate(HttpRegexFormUrlencodedBodyMasking(properties.maskJsonBodyKeys))
+    }
+
+    fun restTemplateUriMasking(properties: HttpMaskSettings):RestTemplateUriMasking{
+        return RestTemplateUriMaskingDelegate(HttpRegexUriMasking(properties.maskQueryParameters))
     }
 }
