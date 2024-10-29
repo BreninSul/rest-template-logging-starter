@@ -30,6 +30,7 @@ import org.springframework.http.HttpRequest
 import org.springframework.http.client.ClientHttpRequestExecution
 import org.springframework.http.client.ClientHttpRequestInterceptor
 import org.springframework.http.client.ClientHttpResponse
+import org.springframework.web.client.HttpStatusCodeException
 import java.nio.charset.StandardCharsets
 import java.util.function.Supplier
 import java.util.logging.Level
@@ -74,22 +75,28 @@ open class RestTemplateLoggingInterceptor(
         request: HttpRequest,
         body: ByteArray,
         execution: ClientHttpRequestExecution,
-    ): ClientHttpResponse =
+    ): ClientHttpResponse {
         try {
             val startTime = System.currentTimeMillis()
             val rqId = helper.getIdString()
-            logRequest(rqId, request, body, startTime)
-            // Have to remove technical headers before request
-            val technicalHeadersBackup = request.removeTechnicalHeaders()
-            val httpResponse = execution.execute(request, body)
-            // And set them back
-            request.setTechnicalHeaders(technicalHeadersBackup)
-            val response = logResponse(rqId, httpResponse, request, startTime)
-            response
+                logRequest(rqId, request, body, startTime)
+                // Have to remove technical headers before request
+                val technicalHeadersBackup = request.removeTechnicalHeaders()
+                val httpResponse = execution.execute(request, body)
+                // And set them back
+                request.setTechnicalHeaders(technicalHeadersBackup)
+            try {
+                val response = logResponse(rqId, httpResponse, request, startTime)
+                return response
+            } catch (e: HttpStatusCodeException) {
+                logResponse(rqId, e, request, startTime)
+                return httpResponse
+            }
         } catch (e: Throwable) {
             logger.log(Level.SEVERE, "Exception in RestTemplate logging interceptor", e)
             throw e
         }
+    }
 
     /**
      * Logs the response of an RestTemplate request and returns the intercepted
@@ -128,7 +135,18 @@ open class RestTemplateLoggingInterceptor(
         logger.log(helper.loggingLevel, logBody)
         return wrappedResponse
     }
-
+    protected open fun logResponse(
+        rqId: String,
+        responseException: HttpStatusCodeException,
+        request: HttpRequest,
+        time: Long,
+    ){
+        if (helper.loggingLevel == Level.OFF) {
+            return
+        }
+        val logBody = constructRsBody(rqId, responseException, request, time)
+        logger.log(helper.loggingLevel, logBody)
+    }
     /**
      * Constructs the request body log message.
      *
@@ -185,6 +203,36 @@ open class RestTemplateLoggingInterceptor(
                 helper.getTookString(request.logResponseTookTime(), time, type),
                 helper.getHeadersString(request.logResponseHeaders(), response.headers, type),
                 helper.getBodyString(request.logResponseBody(), contentSupplier, type),
+                helper.getFooterLine(type),
+            ).filter { !it.isNullOrBlank() }
+                .joinToString("\n")
+        return message
+    }
+
+    /**
+     * Constructs the response body log message.
+     *
+     * @param rqId The request ID.
+     * @param responseException The HttpStatusCodeException containing the response details.
+     * @param request The original HttpRequest.
+     * @param time The time taken for the request and response.
+     * @return The constructed response body log message as a String.
+     */
+    protected open fun constructRsBody(
+        rqId: String,
+        responseException: HttpStatusCodeException,
+        request: HttpRequest,
+        time: Long,
+    ): String {
+        val type = HttpLoggingHelper.Type.RESPONSE
+        val message =
+            listOf(
+                helper.getHeaderLine(type),
+                helper.getIdString(rqId, type),
+                helper.getUriString(request.logResponseUri(), "${responseException.statusCode.value()} ${request.method} ${request.uri}", type),
+                helper.getTookString(request.logResponseTookTime(), time, type),
+                helper.getHeadersString(request.logResponseHeaders(), responseException.responseHeaders?: mapOf(), type),
+                helper.getBodyString(request.logResponseBody(), {responseException.responseBodyAsString}, type),
                 helper.getFooterLine(type),
             ).filter { !it.isNullOrBlank() }
                 .joinToString("\n")
