@@ -1,6 +1,6 @@
 package io.github.breninsul.rest.logging
 
-import io.github.breninsul.logging.HttpLogSettings
+import io.github.breninsul.logging2.HttpLogSettings
 import org.springframework.beans.factory.ObjectProvider
 import org.springframework.boot.SpringBootConfiguration
 import org.springframework.boot.autoconfigure.web.client.RestClientBuilderConfigurer

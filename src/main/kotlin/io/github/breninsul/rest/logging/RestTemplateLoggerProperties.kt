@@ -24,9 +24,10 @@
 
 package io.github.breninsul.rest.logging
 
-import io.github.breninsul.logging.HttpLogSettings
-import io.github.breninsul.logging.HttpLoggingProperties
-import io.github.breninsul.logging.JavaLoggingLevel
+
+import io.github.breninsul.logging2.HttpLogSettings
+import io.github.breninsul.logging2.HttpLoggingProperties
+import io.github.breninsul.logging2.JavaLoggingLevel
 import org.springframework.boot.context.properties.ConfigurationProperties
 
 /**
@@ -47,10 +48,10 @@ import org.springframework.boot.context.properties.ConfigurationProperties
  */
 @ConfigurationProperties("rest-template.logging-interceptor")
 open class RestTemplateLoggerProperties(
-     enabled: Boolean = true,
-     loggingLevel: JavaLoggingLevel = JavaLoggingLevel.INFO,
-     request: HttpLogSettings = HttpLogSettings(tookTimeIncluded = false),
-     response: HttpLogSettings = HttpLogSettings(tookTimeIncluded = true),
-     order: Int = 0,
-     newLineColumnSymbols: Int = 14,
-):HttpLoggingProperties(enabled, loggingLevel, request, response, order, newLineColumnSymbols)
+    enabled: Boolean = true,
+    loggingLevel: JavaLoggingLevel = JavaLoggingLevel.INFO,
+    request: HttpLogSettings = HttpLogSettings(tookTimeIncluded = false),
+    response: HttpLogSettings = HttpLogSettings(tookTimeIncluded = true),
+    order: Int = 0,
+    newLineColumnSymbols: Int = 14,
+): HttpLoggingProperties(enabled, loggingLevel, request, response, order, newLineColumnSymbols)

@@ -25,10 +25,7 @@
 
 package io.github.breninsul.rest.logging
 
-import io.github.breninsul.logging.HttpMaskSettings
-import io.github.breninsul.logging.HttpRegexFormUrlencodedBodyMasking
-import io.github.breninsul.logging.HttpRegexJsonBodyMasking
-import io.github.breninsul.logging.HttpRegexUriMasking
+
 import org.springframework.boot.autoconfigure.AutoConfiguration
 import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty
 import org.springframework.boot.context.properties.EnableConfigurationProperties
@@ -53,38 +50,9 @@ open class RestTemplateLoggerConfiguration {
      */
     @Bean
     fun registerRestTemplateLoggingInterceptor(properties: RestTemplateLoggerProperties): RestTemplateLoggingInterceptor {
-        val requestMaskers= listOf(
-            restTemplateRequestRegexJsonBodyMasking(properties.request.mask),
-            restTemplateRequestFormUrlencodedBodyMasking(properties.request.mask)
-            )
-        val responseMaskers= listOf(
-            restTemplateResponseRegexJsonBodyMasking(properties.request.mask),
-            restTemplateResponseFormUrlencodedBodyMasking(properties.request.mask)
-        )
-        val uriMaskers= listOf(restTemplateUriMasking(properties.request.mask))
-        return RestTemplateLoggingInterceptor(properties,uriMaskers,requestMaskers,responseMaskers)
+
+        return RestTemplateLoggingInterceptor(properties)
     }
 
 
-    fun restTemplateRequestRegexJsonBodyMasking(properties: HttpMaskSettings):RestTemplateRequestBodyMasking{
-        return RestTemplateRequestBodyMaskingDelegate(HttpRegexJsonBodyMasking(properties.maskJsonBodyKeys))
-    }
-
-
-    fun restTemplateResponseRegexJsonBodyMasking(properties: HttpMaskSettings):RestTemplateResponseBodyMasking{
-        return RestTemplateResponseBodyMaskingDelegate(HttpRegexJsonBodyMasking(properties.maskJsonBodyKeys))
-    }
-
-
-    fun restTemplateRequestFormUrlencodedBodyMasking(properties: HttpMaskSettings):RestTemplateRequestBodyMasking{
-        return RestTemplateRequestBodyMaskingDelegate(HttpRegexFormUrlencodedBodyMasking(properties.maskJsonBodyKeys))
-    }
-
-    fun restTemplateResponseFormUrlencodedBodyMasking(properties: HttpMaskSettings):RestTemplateResponseBodyMasking{
-        return RestTemplateResponseBodyMaskingDelegate(HttpRegexFormUrlencodedBodyMasking(properties.maskJsonBodyKeys))
-    }
-
-    fun restTemplateUriMasking(properties: HttpMaskSettings):RestTemplateUriMasking{
-        return RestTemplateUriMaskingDelegate(HttpRegexUriMasking(properties.maskQueryParameters))
-    }
 }

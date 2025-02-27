@@ -24,7 +24,7 @@
 
 package io.github.breninsul.rest.logging
 
-import io.github.breninsul.logging.HttpLoggingHelper
+import io.github.breninsul.logging2.HttpLoggingHelper
 import org.springframework.core.Ordered
 import org.springframework.http.HttpRequest
 import org.springframework.http.client.ClientHttpRequestExecution
@@ -51,16 +51,14 @@ import java.util.logging.Logger
  */
 open class RestTemplateLoggingInterceptor(
     protected open val properties: RestTemplateLoggerProperties,
-    uriMaskers: List<RestTemplateUriMasking>,
-    requestBodyMaskers: List<RestTemplateRequestBodyMasking>,
-    responseBodyMaskers: List<RestTemplateResponseBodyMasking>,
+
 ) : ClientHttpRequestInterceptor, Ordered {
     /**
      * Provides logging functionality for HTTP requests and responses.
      *
      * @property helper The HTTP logging helper used for logging requests and responses.
      */
-    protected open val helper = HttpLoggingHelper("RestTemplate", properties,uriMaskers, requestBodyMaskers, responseBodyMaskers)
+    protected open val helper = HttpLoggingHelper("RestTemplate", properties)
     protected open val logger: Logger = Logger.getLogger(RestTemplateLoggingInterceptor::class.java.name)
 
     /**
@@ -166,11 +164,11 @@ open class RestTemplateLoggingInterceptor(
         val message =
             listOf(
                 helper.getHeaderLine(type),
-                helper.getIdString(rqId, type),
-                helper.getUriString(request.logRequestUri(), "${request.method} ${request.uri}", type),
+                helper.getIdString(request.logRequestId(),rqId, type),
+                helper.getUriString(request.logRequestMaskQueryParameters(),request.logRequestUri(), "${request.method} ${request.uri}", type),
                 helper.getTookString(request.logRequestTookTime(), time, type),
-                helper.getHeadersString(request.logRequestHeaders(), request.headers, type),
-                helper.getBodyString(request.logRequestBody(), contentSupplier, type),
+                helper.getHeadersString(request.logRequestMaskHeaders(),request.logRequestHeaders(), request.headers, type),
+                helper.getBodyString(request.logRequestMaskBodyKeys(),request.logRequestBody(), contentSupplier, type),
                 helper.getFooterLine(type),
             ).filter { !it.isNullOrBlank() }
                 .joinToString("\n")
@@ -198,11 +196,11 @@ open class RestTemplateLoggingInterceptor(
         val message =
             listOf(
                 helper.getHeaderLine(type),
-                helper.getIdString(rqId, type),
-                helper.getUriString(request.logResponseUri(), "${response.statusCode.value()} ${request.method} ${request.uri}", type),
+                helper.getIdString(request.logResponseId(),rqId, type),
+                helper.getUriString(request.logResponseMaskQueryParameters(),request.logResponseUri(), "${response.statusCode.value()} ${request.method} ${request.uri}", type),
                 helper.getTookString(request.logResponseTookTime(), time, type),
-                helper.getHeadersString(request.logResponseHeaders(), response.headers, type),
-                helper.getBodyString(request.logResponseBody(), contentSupplier, type),
+                helper.getHeadersString(request.logResponseMaskHeaders(),request.logResponseHeaders(), response.headers, type),
+                helper.getBodyString(request.logResponseMaskBodyKeys(),request.logResponseBody(), contentSupplier, type),
                 helper.getFooterLine(type),
             ).filter { !it.isNullOrBlank() }
                 .joinToString("\n")
@@ -228,11 +226,11 @@ open class RestTemplateLoggingInterceptor(
         val message =
             listOf(
                 helper.getHeaderLine(type),
-                helper.getIdString(rqId, type),
-                helper.getUriString(request.logResponseUri(), "${responseException.statusCode.value()} ${request.method} ${request.uri}", type),
+                helper.getIdString(request.logResponseId(),rqId, type),
+                helper.getUriString(request.logResponseMaskQueryParameters(),request.logResponseUri(), "${responseException.statusCode.value()} ${request.method} ${request.uri}", type),
                 helper.getTookString(request.logResponseTookTime(), time, type),
-                helper.getHeadersString(request.logResponseHeaders(), responseException.responseHeaders?: mapOf(), type),
-                helper.getBodyString(request.logResponseBody(), {responseException.responseBodyAsString}, type),
+                helper.getHeadersString(request.logResponseMaskHeaders(),request.logResponseHeaders(), responseException.responseHeaders?: mapOf(), type),
+                helper.getBodyString(request.logResponseMaskBodyKeys(),request.logResponseBody(), {responseException.responseBodyAsString}, type),
                 helper.getFooterLine(type),
             ).filter { !it.isNullOrBlank() }
                 .joinToString("\n")
