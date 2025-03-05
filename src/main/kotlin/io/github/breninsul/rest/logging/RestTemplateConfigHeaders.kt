@@ -150,7 +150,7 @@ fun HttpRequest.logRequestMaskBodyKeys(): Map<HttpBodyType,Set<String>>? = heade
 fun RestClient.RequestBodySpec.logRequestMaskBodyKeys(params:Map<HttpBodyType,Set<String>>?): RestClient.RequestBodySpec {
     val headerName = HttpConfigHeaders.LOG_REQUEST_MASK_BODY_KEYS
     return if (params!=null ) {
-        this.header(headerName, params.entries.joinToString(";") { "${it.key}:${it.value.joinToString(",")}}" })
+        this.header(headerName, params.entries.joinToString(";") { "${it.key}:${it.value.joinToString(",")}" })
     } else {
         this.header(headerName,null)
     }
@@ -230,7 +230,7 @@ fun HttpRequest.logResponseMaskBodyKeys(): Map<HttpBodyType,Set<String>>? = head
 fun RestClient.RequestBodySpec.logResponseMaskBodyKeys(params:Map<HttpBodyType,Set<String>>?): RestClient.RequestBodySpec {
     val headerName = HttpConfigHeaders.LOG_RESPONSE_MASK_BODY_KEYS
     return if (params!=null ) {
-        this.header(headerName, params.entries.joinToString(";") { "${it.key}:${it.value.joinToString(",")}}" })
+        this.header(headerName, params.entries.joinToString(";") { "${it.key}:${it.value.joinToString(",")}" })
     } else {
         this.header(headerName,null)
     }
