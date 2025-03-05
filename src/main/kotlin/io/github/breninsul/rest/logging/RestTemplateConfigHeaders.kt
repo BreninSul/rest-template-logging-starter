@@ -72,7 +72,7 @@ fun HttpRequest.logRequestId(): Boolean? = headers[HttpConfigHeaders.LOG_REQUEST
  *    respective string value. If null, the header is removed.
  * @return The instance of `Request.Builder` to allow for method chaining.
  */
-fun RestClient.RequestHeadersSpec<*>.logRequestId(log: Boolean?): RestClient.RequestHeadersSpec<*> {
+fun RestClient.RequestBodySpec.logRequestId(log: Boolean?): RestClient.RequestBodySpec {
     val headerName = HttpConfigHeaders.LOG_REQUEST_ID
     return this.header(headerName, log?.toString())
 }
@@ -86,7 +86,7 @@ fun RestClient.RequestHeadersSpec<*>.logRequestId(log: Boolean?): RestClient.Req
  */
 fun HttpRequest.logRequestUri(): Boolean? = headers.getFirst(HttpConfigHeaders.LOG_REQUEST_URI)?.toBoolean()
 
-fun RestClient.RequestHeadersSpec<*>.logRequestUri(log: Boolean?): RestClient.RequestHeadersSpec<*> {
+fun RestClient.RequestBodySpec.logRequestUri(log: Boolean?): RestClient.RequestBodySpec {
     val headerName = HttpConfigHeaders.LOG_REQUEST_URI
     return this.header(headerName, log?.toString())
 }
@@ -94,7 +94,7 @@ fun RestClient.RequestHeadersSpec<*>.logRequestUri(log: Boolean?): RestClient.Re
 fun HttpRequest.logRequestMaskQueryParameters(): List<String>? = headers[HttpConfigHeaders.LOG_REQUEST_MASK_QUERY_PARAMETERS]?.firstOrNull()?.split(",")
 
 
-fun RestClient.RequestHeadersSpec<*>.logRequestMaskQueryParameters(params: Collection<String>?): RestClient.RequestHeadersSpec<*> {
+fun RestClient.RequestBodySpec.logRequestMaskQueryParameters(params: Collection<String>?): RestClient.RequestBodySpec {
     val headerName = HttpConfigHeaders.LOG_REQUEST_MASK_QUERY_PARAMETERS
     return this.header(headerName, params?.joinToString(","))
 }
@@ -107,7 +107,7 @@ fun RestClient.RequestHeadersSpec<*>.logRequestMaskQueryParameters(params: Colle
  *    null if the header is not present or cannot be parsed as a Boolean.
  */
 fun HttpRequest.logRequestHeaders(): Boolean? = headers.getFirst(HttpConfigHeaders.LOG_REQUEST_HEADERS)?.toBoolean()
-fun RestClient.RequestHeadersSpec<*>.logRequestHeaders(log: Boolean?): RestClient.RequestHeadersSpec<*> {
+fun RestClient.RequestBodySpec.logRequestHeaders(log: Boolean?): RestClient.RequestBodySpec {
     val headerName = HttpConfigHeaders.LOG_REQUEST_HEADERS
     return this.header(headerName, log?.toString())
 }
@@ -116,7 +116,7 @@ fun RestClient.RequestHeadersSpec<*>.logRequestHeaders(log: Boolean?): RestClien
 fun HttpRequest.logRequestMaskHeaders(): List<String>? = headers[HttpConfigHeaders.LOG_REQUEST_MASK_HEADERS]?.firstOrNull()?.split(",")
 
 
-fun RestClient.RequestHeadersSpec<*>.logRequestMaskHeaders(params: Collection<String>?): RestClient.RequestHeadersSpec<*> {
+fun RestClient.RequestBodySpec.logRequestMaskHeaders(params: Collection<String>?): RestClient.RequestBodySpec {
     val headerName = HttpConfigHeaders.LOG_REQUEST_MASK_HEADERS
     return this.header(headerName, params?.joinToString(","))
 }
@@ -129,7 +129,7 @@ fun RestClient.RequestHeadersSpec<*>.logRequestMaskHeaders(params: Collection<St
  *    the header is not present or cannot be parsed as a boolean.
  */
 fun HttpRequest.logRequestBody(): Boolean? = headers.getFirst(HttpConfigHeaders.LOG_REQUEST_BODY)?.toBoolean()
-fun RestClient.RequestHeadersSpec<*>.logRequestBody(log: Boolean?): RestClient.RequestHeadersSpec<*> {
+fun RestClient.RequestBodySpec.logRequestBody(log: Boolean?): RestClient.RequestBodySpec {
     val headerName = HttpConfigHeaders.LOG_REQUEST_BODY
     return this.header(headerName, log?.toString())
 }
@@ -147,7 +147,7 @@ fun HttpRequest.logRequestMaskBodyKeys(): Map<HttpBodyType,Set<String>>? = heade
 }
 
 
-fun RestClient.RequestHeadersSpec<*>.logRequestMaskBodyKeys(params:Map<HttpBodyType,Set<String>>?): RestClient.RequestHeadersSpec<*> {
+fun RestClient.RequestBodySpec.logRequestMaskBodyKeys(params:Map<HttpBodyType,Set<String>>?): RestClient.RequestBodySpec {
     val headerName = HttpConfigHeaders.LOG_REQUEST_MASK_BODY_KEYS
     return if (params!=null ) {
         this.header(headerName, params.entries.joinToString(";") { "${it.key}:${it.value.joinToString(",")}}" })
@@ -163,14 +163,14 @@ fun RestClient.RequestHeadersSpec<*>.logRequestMaskBodyKeys(params:Map<HttpBodyT
  *    if the header is not present or cannot be parsed as a Boolean.
  */
 fun HttpRequest.logRequestTookTime(): Boolean? = headers.getFirst(HttpConfigHeaders.LOG_REQUEST_TOOK_TIME)?.toBoolean()
-fun RestClient.RequestHeadersSpec<*>.logRequestTookTime(log: Boolean?): RestClient.RequestHeadersSpec<*> {
+fun RestClient.RequestBodySpec.logRequestTookTime(log: Boolean?): RestClient.RequestBodySpec {
     val headerName = HttpConfigHeaders.LOG_REQUEST_TOOK_TIME
     return this.header(headerName, log?.toString())
 }
 
 fun HttpRequest.logResponseId(): Boolean? = headers[HttpConfigHeaders.LOG_RESPONSE_ID]?.firstOrNull()?.toBoolean()
 
-fun RestClient.RequestHeadersSpec<*>.logResponseId(log: Boolean?): RestClient.RequestHeadersSpec<*> {
+fun RestClient.RequestBodySpec.logResponseId(log: Boolean?): RestClient.RequestBodySpec {
     val headerName = HttpConfigHeaders.LOG_RESPONSE_ID
     return this.header(headerName, log?.toString())
 }
@@ -180,7 +180,7 @@ fun HttpRequest.logResponseUri(): Boolean? = headers.getFirst(HttpConfigHeaders.
 fun HttpRequest.logResponseMaskQueryParameters(): List<String>? = headers[HttpConfigHeaders.LOG_RESPONSE_MASK_QUERY_PARAMETERS]?.firstOrNull()?.split(",")
 
 
-fun RestClient.RequestHeadersSpec<*>.logResponseMaskQueryParameters(params: Collection<String>?): RestClient.RequestHeadersSpec<*> {
+fun RestClient.RequestBodySpec.logResponseMaskQueryParameters(params: Collection<String>?): RestClient.RequestBodySpec {
     val headerName = HttpConfigHeaders.LOG_RESPONSE_MASK_QUERY_PARAMETERS
     return this.header(headerName, params?.joinToString(","))
 }
@@ -192,14 +192,14 @@ fun RestClient.RequestHeadersSpec<*>.logResponseMaskQueryParameters(params: Coll
  *    if the header is not present or cannot be converted to Boolean.
  */
 fun HttpRequest.logResponseHeaders(): Boolean? = headers.getFirst(HttpConfigHeaders.LOG_RESPONSE_HEADERS)?.toBoolean()
-fun RestClient.RequestHeadersSpec<*>.logResponseHeaders(log: Boolean?): RestClient.RequestHeadersSpec<*> {
+fun RestClient.RequestBodySpec.logResponseHeaders(log: Boolean?): RestClient.RequestBodySpec {
     val headerName = HttpConfigHeaders.LOG_RESPONSE_HEADERS
     return this.header(headerName, log?.toString())
 }
 fun HttpRequest.logResponseMaskHeaders(): List<String>? = headers[HttpConfigHeaders.LOG_RESPONSE_MASK_HEADERS]?.firstOrNull()?.split(",")
 
 
-fun RestClient.RequestHeadersSpec<*>.logResponseMaskHeaders(params: Collection<String>?): RestClient.RequestHeadersSpec<*> {
+fun RestClient.RequestBodySpec.logResponseMaskHeaders(params: Collection<String>?): RestClient.RequestBodySpec {
     val headerName = HttpConfigHeaders.LOG_RESPONSE_MASK_HEADERS
     return this.header(headerName, params?.joinToString(","))
 }
@@ -211,7 +211,7 @@ fun RestClient.RequestHeadersSpec<*>.logResponseMaskHeaders(params: Collection<S
  *    the header is not present or cannot be converted to Boolean.
  */
 fun HttpRequest.logResponseBody(): Boolean? = headers.getFirst(HttpConfigHeaders.LOG_RESPONSE_BODY)?.toBoolean()
-fun RestClient.RequestHeadersSpec<*>.logResponseBody(log: Boolean?): RestClient.RequestHeadersSpec<*> {
+fun RestClient.RequestBodySpec.logResponseBody(log: Boolean?): RestClient.RequestBodySpec {
     val headerName = HttpConfigHeaders.LOG_RESPONSE_BODY
     return this.header(headerName, log?.toString())
 }
@@ -227,7 +227,7 @@ fun HttpRequest.logResponseMaskBodyKeys(): Map<HttpBodyType,Set<String>>? = head
     return@let mapped.toMap()
 }
 
-fun RestClient.RequestHeadersSpec<*>.logResponseMaskBodyKeys(params:Map<HttpBodyType,Set<String>>?): RestClient.RequestHeadersSpec<*> {
+fun RestClient.RequestBodySpec.logResponseMaskBodyKeys(params:Map<HttpBodyType,Set<String>>?): RestClient.RequestBodySpec {
     val headerName = HttpConfigHeaders.LOG_RESPONSE_MASK_BODY_KEYS
     return if (params!=null ) {
         this.header(headerName, params.entries.joinToString(";") { "${it.key}:${it.value.joinToString(",")}}" })
@@ -245,7 +245,7 @@ fun RestClient.RequestHeadersSpec<*>.logResponseMaskBodyKeys(params:Map<HttpBody
  */
 fun HttpRequest.logResponseTookTime(): Boolean? = headers.getFirst(HttpConfigHeaders.LOG_RESPONSE_TOOK_TIME)?.toBoolean()
 
-fun RestClient.RequestHeadersSpec<*>.logResponseTookTime(log: Boolean?): RestClient.RequestHeadersSpec<*> {
+fun RestClient.RequestBodySpec.logResponseTookTime(log: Boolean?): RestClient.RequestBodySpec {
     val headerName = HttpConfigHeaders.LOG_RESPONSE_TOOK_TIME
     return this.header(headerName, log?.toString())
 }
