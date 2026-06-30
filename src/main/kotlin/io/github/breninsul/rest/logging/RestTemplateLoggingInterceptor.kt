@@ -167,7 +167,7 @@ open class RestTemplateLoggingInterceptor(
                 helper.getIdString(request.logRequestId(),rqId, type),
                 helper.getUriString(request.logRequestMaskQueryParameters(),request.logRequestUri(), "${request.method} ${request.uri}", type),
                 helper.getTookString(request.logRequestTookTime(), time, type),
-                helper.getHeadersString(request.logRequestMaskHeaders(),request.logRequestHeaders(), request.headers, type),
+                helper.getHeadersString(request.logRequestMaskHeaders(),request.logRequestHeaders(), request.headers.asMultiValueMap(), type),
                 helper.getBodyString(request.logRequestMaskBodyKeys(),request.logRequestBody(), contentSupplier, type),
                 helper.getFooterLine(type),
             ).filter { !it.isNullOrBlank() }
@@ -199,7 +199,7 @@ open class RestTemplateLoggingInterceptor(
                 helper.getIdString(request.logResponseId(),rqId, type),
                 helper.getUriString(request.logResponseMaskQueryParameters(),request.logResponseUri(), "${response.statusCode.value()} ${request.method} ${request.uri}", type),
                 helper.getTookString(request.logResponseTookTime(), time, type),
-                helper.getHeadersString(request.logResponseMaskHeaders(),request.logResponseHeaders(), response.headers, type),
+                helper.getHeadersString(request.logResponseMaskHeaders(),request.logResponseHeaders(), response.headers.asMultiValueMap(), type),
                 helper.getBodyString(request.logResponseMaskBodyKeys(),request.logResponseBody(), contentSupplier, type),
                 helper.getFooterLine(type),
             ).filter { !it.isNullOrBlank() }
@@ -229,7 +229,7 @@ open class RestTemplateLoggingInterceptor(
                 helper.getIdString(request.logResponseId(),rqId, type),
                 helper.getUriString(request.logResponseMaskQueryParameters(),request.logResponseUri(), "${responseException.statusCode.value()} ${request.method} ${request.uri}", type),
                 helper.getTookString(request.logResponseTookTime(), time, type),
-                helper.getHeadersString(request.logResponseMaskHeaders(),request.logResponseHeaders(), responseException.responseHeaders?: mapOf(), type),
+                helper.getHeadersString(request.logResponseMaskHeaders(),request.logResponseHeaders(), responseException.responseHeaders?.asMultiValueMap() ?: mapOf(), type),
                 helper.getBodyString(request.logResponseMaskBodyKeys(),request.logResponseBody(), {responseException.responseBodyAsString}, type),
                 helper.getFooterLine(type),
             ).filter { !it.isNullOrBlank() }
